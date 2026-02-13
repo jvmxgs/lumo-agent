@@ -14,7 +14,7 @@ export const initializePhaser = () => {
     pixelArt: true,
     scene: {
       preload: function (this: Phaser.Scene) {
-        this.load.spritesheet("robot", "/robot-spritesheet.png", {
+        this.load.spritesheet("robot", "./robot-spritesheet.png", {
           frameWidth: 24,
           frameHeight: 22,
         });
