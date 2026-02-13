@@ -1,3 +1,5 @@
+import Phaser from "phaser";
+
 export const initializePhaser = () => {
   const Phaser = require("phaser");
   
@@ -11,13 +13,13 @@ export const initializePhaser = () => {
     parent: "robotCanvas",
     pixelArt: true,
     scene: {
-      preload: function () {
+      preload: function (this: Phaser.Scene) {
         this.load.spritesheet("robot", "/robot-spritesheet.png", {
           frameWidth: 24,
           frameHeight: 22,
         });
       },
-      create: function () {
+      create: function (this: Phaser.Scene) {
         sceneContext = this;
         robot = this.add.sprite(400, 200, "robot");
         robot.setScale(4);
@@ -100,7 +102,7 @@ export const initializePhaser = () => {
           }
         });
       },
-      update: function () {
+      update: function (this: Phaser.Scene) {
         // Game loop logic here
       },
     },
