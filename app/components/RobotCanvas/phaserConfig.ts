@@ -11,6 +11,7 @@ export const initializePhaser = () => {
     width: 800,
     height: 400,
     parent: "robotCanvas",
+    transparent: true, 
     pixelArt: true,
     scene: {
       preload: function (this: Phaser.Scene) {
@@ -51,7 +52,7 @@ export const initializePhaser = () => {
           repeat: -1,
         });
 
-        robot.play("idle");
+        robot.play("iddle");
 
         // Listen for robot actions from Intent Interpreter
         window.addEventListener("robot-action", (event: Event) => {
@@ -67,6 +68,7 @@ export const initializePhaser = () => {
                 x: robot.x - 100,
                 duration: 800,
                 onComplete: () => {
+                  robot.flipX = false;
                   robot.play("idle");
                   window.dispatchEvent(new CustomEvent("robot-action-complete", { detail: { action } }));
                 },
