@@ -3,7 +3,9 @@
 import { createRobotAnimations } from '../animations'
 import { handleRobotAction, type RobotAction } from '../handlers'
 
-export const createRobotSceneClass = (Phaser: typeof import('phaser')) => {
+type PhaserType = typeof import('phaser')
+
+export const createRobotSceneClass = (Phaser: PhaserType) => {
   return class RobotScene extends Phaser.Scene {
     private robot: Phaser.GameObjects.Sprite | null = null
 

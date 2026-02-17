@@ -1,28 +1,36 @@
-"use client";
+'use client'
 
-import { useState } from "react";
+import { useState } from 'react'
+import { useI18n } from '@/app/i18n/I18nContext'
 
 interface TerminalInputProps {
-  onSubmit: (command: string) => void;
-  robotState?: string;
+  onSubmit: (command: string) => void
+  robotState?: string
 }
 
-export default function TerminalInput({ onSubmit, robotState = "IDLE" }: TerminalInputProps) {
-  const [command, setCommand] = useState("");
+export default function TerminalInput({
+  onSubmit,
+  robotState = 'IDLE',
+}: TerminalInputProps) {
+  const [command, setCommand] = useState('')
+  const { t } = useI18n()
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+    e.preventDefault()
 
-    if (!command.trim()) return;
+    if (!command.trim()) return
 
-    onSubmit(command);
-    setCommand("");
-  };
+    onSubmit(command)
+    setCommand('')
+  }
 
   return (
     <div className="absolute bottom-10 left-1/2 -translate-x-1/2 w-full max-w-xl px-4 z-10">
-      <p className="text-[10px] text-neutral-500 mb-2 text-center">
+      <p className="text-[10px] text-neutral-500 mb-1 text-center">
         Robot State: <span className="text-green-400">{robotState}</span>
+      </p>
+      <p className="text-[9px] text-neutral-600 mb-2 text-center">
+        {t.terminal.help} ({t.commandExamples})
       </p>
       <form
         onSubmit={handleSubmit}
@@ -34,7 +42,7 @@ export default function TerminalInput({ onSubmit, robotState = "IDLE" }: Termina
           <input
             value={command}
             onChange={(e) => setCommand(e.target.value)}
-            placeholder="enter command... (left, right, jump)"
+            placeholder={t.terminal.placeholder}
             className="flex-1 bg-transparent outline-none text-sm 
                        placeholder:text-neutral-600"
             autoFocus
@@ -42,5 +50,5 @@ export default function TerminalInput({ onSubmit, robotState = "IDLE" }: Termina
         </div>
       </form>
     </div>
-  );
+  )
 }
