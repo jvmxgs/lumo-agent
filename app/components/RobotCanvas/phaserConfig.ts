@@ -1,8 +1,11 @@
-export const initializePhaser = async () => {
-  // Dynamically import Phaser to avoid server-side rendering issues
-  const Phaser = (await import('phaser')).default
+'use client'
 
-  let robot: Phaser.GameObjects.Sprite | null = null
+export const initializePhaser = async () => {
+  const Phaser = (await import('phaser')).default
+  const { createRobotSceneClass } = await import('./scenes/RobotScene')
+
+  // Create the RobotScene class with Phaser
+  const RobotScene = createRobotSceneClass(Phaser)
 
   const config = {
     type: Phaser.AUTO,
@@ -11,123 +14,7 @@ export const initializePhaser = async () => {
     parent: 'robotCanvas',
     transparent: true,
     pixelArt: true,
-    scene: {
-      preload: function (this: Phaser.Scene) {
-        this.load.spritesheet('robot', './robot-spritesheet.png', {
-          frameWidth: 24,
-          frameHeight: 22,
-        })
-      },
-      create: function (this: Phaser.Scene) {
-        robot = this.add.sprite(400, 200, 'robot')
-        robot.setScale(4)
-
-        // Define animations
-        this.anims.create({
-          key: 'idle',
-          frames: [
-            { key: 'robot', frame: 0, duration: 2000 },
-            { key: 'robot', frame: 1, duration: 100 },
-            { key: 'robot', frame: 2, duration: 100 },
-            { key: 'robot', frame: 1, duration: 100 },
-          ],
-          frameRate: 10,
-          repeat: -1,
-        })
-
-        this.anims.create({
-          key: 'walkRight',
-          frames: this.anims.generateFrameNumbers('robot', {
-            start: 3,
-            end: 8,
-          }),
-          frameRate: 10,
-          repeat: -1,
-        })
-
-        this.anims.create({
-          key: 'walkLeft',
-          frames: this.anims.generateFrameNumbers('robot', {
-            start: 3,
-            end: 8,
-          }),
-          frameRate: 10,
-          repeat: -1,
-        })
-
-        robot.play('iddle')
-
-        // Listen for robot actions from Intent Interpreter
-        window.addEventListener('robot-action', (event: Event) => {
-          const customEvent = event as CustomEvent
-          const { action } = customEvent.detail
-
-          if (!robot) return
-
-          switch (action) {
-            case 'MOVE_LEFT':
-              robot.flipX = true
-              robot.play('walkLeft')
-              this.tweens.add({
-                targets: robot,
-                x: robot.x - 100,
-                duration: 800,
-                onComplete: () => {
-                  if (!robot) return
-                  robot.flipX = false
-                  robot.play('idle')
-                  window.dispatchEvent(
-                    new CustomEvent('robot-action-complete', {
-                      detail: { action },
-                    })
-                  )
-                },
-              })
-              break
-
-            case 'MOVE_RIGHT':
-              robot.flipX = false
-              robot.play('walkRight')
-              this.tweens.add({
-                targets: robot,
-                x: robot.x + 100,
-                duration: 800,
-                onComplete: () => {
-                  if (!robot) return
-                  robot.play('idle')
-                  window.dispatchEvent(
-                    new CustomEvent('robot-action-complete', {
-                      detail: { action },
-                    })
-                  )
-                },
-              })
-              break
-
-            case 'JUMP':
-              this.tweens.add({
-                targets: robot,
-                y: robot.y - 80,
-                duration: 400,
-                yoyo: true,
-                onComplete: () => {
-                  if (!robot) return
-                  robot.play('idle')
-                  window.dispatchEvent(
-                    new CustomEvent('robot-action-complete', {
-                      detail: { action },
-                    })
-                  )
-                },
-              })
-              break
-          }
-        })
-      },
-      update: function (this: Phaser.Scene) {
-        // Game loop logic here
-      },
-    },
+    scene: RobotScene,
   }
 
   return new Phaser.Game(config)
