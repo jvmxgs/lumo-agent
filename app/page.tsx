@@ -27,9 +27,9 @@ export default function Home() {
     }
   }, [])
 
-  const handleCommand = (command: string) => {
+  const handleCommand = async (command: string) => {
     // Intent Interpreter Agent: Parse command
-    const intent = IntentInterpreterAgent.interpret(command)
+    const intent = await IntentInterpreterAgent.interpretWithAI(command)
     console.log('Command:', command, '→ Intent:', intent)
 
     if (intent === 'UNKNOWN') {
