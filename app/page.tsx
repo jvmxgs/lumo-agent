@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react'
 import RobotCanvas from './components/RobotCanvas'
 import TerminalInput from './components/TerminalInput'
+import CommandSuggestions from './components/CommandSuggestions'
 import { LanguageSelector } from './components/LanguageSelector'
 import { useI18n } from './i18n/I18nContext'
 import { IntentInterpreterAgent } from './agents/IntentInterpreter'
@@ -74,7 +75,11 @@ export default function Home() {
       </div>
 
       {/* Terminal Input Component */}
-      <TerminalInput onSubmit={handleCommand} robotState={robotState} />
+      <TerminalInput onSubmit={handleCommand} robotState={robotState}>
+        {(history, onSelect) => (
+          <CommandSuggestions history={history} onSelect={onSelect} />
+        )}
+      </TerminalInput>
     </main>
   )
 }
