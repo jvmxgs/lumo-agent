@@ -1,6 +1,12 @@
 'use client'
 
-import React, { createContext, useContext, useState, ReactNode } from 'react'
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from 'react'
 import {
   Language,
   translations,
@@ -17,7 +23,29 @@ interface I18nContextType {
 const I18nContext = createContext<I18nContextType | undefined>(undefined)
 
 export function I18nProvider({ children }: { children: ReactNode }) {
+  // start with a constant value during SSR and initial client render
   const [language, setLanguage] = useState<Language>('es')
+
+  // read localStorage only after hydration to avoid mismatched markup
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const stored = window.localStorage.getItem('preferredLanguage')
+      if (
+        (stored === 'es' || stored === 'en' || stored === 'pt') &&
+        stored !== language
+      ) {
+        setLanguage(stored)
+      }
+    }
+  }, [])
+
+  // persist whenever language changes
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      window.localStorage.setItem('preferredLanguage', language)
+    }
+  }, [language])
+
   const t = getTranslation(language)
 
   return (
