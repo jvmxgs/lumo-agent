@@ -30,7 +30,13 @@ export default function TerminalInput({
   // allow suggestions to insert text into the input
   const handleSuggestionClick = (cmd: string) => {
     setCommand(cmd)
-    // optional: focus input after setting (useRef would be needed later if required)
+    //focus input after setting (useRef would be needed later if required)
+    const input = document.getElementById(
+      'terminal-input'
+    ) as HTMLInputElement | null
+    if (input) {
+      input.focus()
+    }
   }
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -60,6 +66,7 @@ export default function TerminalInput({
         <div className="flex items-center gap-3">
           <span className="text-green-400 text-sm">$</span>
           <input
+            id="terminal-input"
             value={command}
             onChange={(e) => setCommand(e.target.value)}
             placeholder={t.terminal.placeholder}

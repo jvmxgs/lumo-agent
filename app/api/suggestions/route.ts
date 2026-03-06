@@ -46,9 +46,6 @@ History:\n${history.join('\n')}`
       }
     }
 
-    console.log('ia response', response)
-    console.log(JSON.stringify(response))
-    console.log(suggestions)
     return NextResponse.json({ suggestions })
   } catch (error) {
     console.error('Suggestion API error', error)
