@@ -27,8 +27,10 @@ export const createRobotSceneClass = (Phaser: PhaserType) => {
      * Initialize scene and create game objects
      */
     create() {
-      // Create the robot sprite
-      this.robot = this.add.sprite(400, 200, 'robot')
+      // Create the robot sprite at the current center of the scene
+      const centerX = this.scale.width / 2
+      const centerY = this.scale.height / 2
+      this.robot = this.add.sprite(centerX, centerY, 'robot')
       this.robot.setScale(4)
 
       // Create all animations
@@ -39,6 +41,13 @@ export const createRobotSceneClass = (Phaser: PhaserType) => {
 
       // Set up event listeners for robot actions
       this.setupRobotActionListeners()
+
+      // make sure the robot stays centered if the canvas resizes
+      this.scale.on('resize', (gameSize: Phaser.Structs.Size) => {
+        if (this.robot) {
+          this.robot.setPosition(gameSize.width / 2, gameSize.height / 2)
+        }
+      })
     }
 
     /**

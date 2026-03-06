@@ -21,7 +21,7 @@ const RobotCanvas = () => {
   return (
     <div
       id="robotCanvas"
-      className="w-full max-w-2xl h-96 rounded-lg shadow-lg mb-8"
+      className="w-full max-w-2xl aspect-[2/1] rounded-lg shadow-lg mb-8"
     ></div>
   )
 }
