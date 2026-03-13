@@ -12,7 +12,6 @@ export const handleJump = (
     duration: 400,
     yoyo: true,
     onComplete: () => {
-      robot.play('idle')
       dispatchActionComplete('JUMP')
     },
   })

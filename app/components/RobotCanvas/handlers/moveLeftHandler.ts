@@ -15,7 +15,6 @@ export const handleMoveLeft = (
     duration: 800,
     onComplete: () => {
       robot.flipX = false
-      robot.play('idle')
       dispatchActionComplete('MOVE_LEFT')
     },
   })

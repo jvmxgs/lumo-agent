@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, type ReactNode } from 'react'
+import { useState, type ReactNode, useEffect } from 'react'
 import { useI18n } from '@/app/i18n/I18nContext'
 
 interface TerminalInputProps {
@@ -26,6 +26,28 @@ export default function TerminalInput({
   const [command, setCommand] = useState('')
   const [history, setHistory] = useState<string[]>([])
   const { t } = useI18n()
+
+  useEffect(() => {
+    const input = document.getElementById('terminal-input') as HTMLInputElement
+    if (!input) return
+
+    let typingTimeout: NodeJS.Timeout
+
+    const handleInput = () => {
+      window.dispatchEvent(new CustomEvent('typing-start'))
+      clearTimeout(typingTimeout)
+      typingTimeout = setTimeout(() => {
+        window.dispatchEvent(new CustomEvent('typing-stop'))
+      }, 1000)
+    }
+
+    input.addEventListener('input', handleInput)
+
+    return () => {
+      input.removeEventListener('input', handleInput)
+      clearTimeout(typingTimeout)
+    }
+  }, [])
 
   // allow suggestions to insert text into the input
   const handleSuggestionClick = (cmd: string) => {

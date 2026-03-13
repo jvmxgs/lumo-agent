@@ -8,6 +8,7 @@ type PhaserType = typeof import('phaser')
 export const createRobotSceneClass = (Phaser: PhaserType) => {
   return class RobotScene extends Phaser.Scene {
     private robot: Phaser.GameObjects.Sprite | null = null
+    private isTyping = false
 
     constructor() {
       super({ key: 'RobotScene' })
@@ -36,8 +37,21 @@ export const createRobotSceneClass = (Phaser: PhaserType) => {
       // Create all animations
       createRobotAnimations(this)
 
+      // Set up animation complete listener for lookTerminal
+      this.robot?.on(
+        'animationcomplete',
+        (animation: Phaser.Animations.Animation) => {
+          if (animation.key === 'lookTerminal' && this.isTyping) {
+            this.robot?.play('lookTerminal')
+          }
+        }
+      )
+
       // Start with idle animation
-      this.robot.play('idle')
+      // this.robot.play('idle')
+
+      // Schedule random idle animation switches
+      this.scheduleIdleSwitch()
 
       // Set up event listeners for robot actions
       this.setupRobotActionListeners()
@@ -63,6 +77,48 @@ export const createRobotSceneClass = (Phaser: PhaserType) => {
         if (this.robot) {
           handleRobotAction(this, this.robot, action as RobotAction)
         }
+      })
+
+      window.addEventListener('robot-action-complete', () => {
+        this.robot?.play(this.isTyping ? 'lookTerminal' : 'idle')
+      })
+
+      window.addEventListener('typing-start', () => {
+        this.isTyping = true
+        if (
+          this.robot?.anims.currentAnim?.key === 'idle' ||
+          this.robot?.anims.currentAnim?.key === 'idle2'
+        ) {
+          this.robot?.play('lookTerminal')
+        }
+      })
+
+      window.addEventListener('typing-stop', () => {
+        this.isTyping = false
+        if (this.robot?.anims.currentAnim?.key === 'lookTerminal') {
+          this.robot.play('idle')
+        }
+      })
+    }
+
+    /**
+     * Schedule random switches between idle animations
+     */
+    private scheduleIdleSwitch() {
+      this.time.addEvent({
+        delay: Phaser.Math.Between(3000, 10000),
+        callback: () => {
+          if (this.isTyping) {
+            this.scheduleIdleSwitch()
+            return
+          }
+          if (Math.random() < 0.2) {
+            this.robot?.play('idle2')
+          } else {
+            this.robot?.play('idle')
+          }
+          this.scheduleIdleSwitch()
+        },
       })
     }
 

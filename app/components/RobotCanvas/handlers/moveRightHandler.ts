@@ -14,7 +14,6 @@ export const handleMoveRight = (
     x: robot.x + 100,
     duration: 800,
     onComplete: () => {
-      robot.play('idle')
       dispatchActionComplete('MOVE_RIGHT')
     },
   })

@@ -1,5 +1,5 @@
-import OpenAI from 'openai'
 import { NextResponse } from 'next/server'
+import { aiRequest } from '@/app/api/aiClient'
 
 export async function POST(req: Request) {
   try {
@@ -12,7 +12,11 @@ export async function POST(req: Request) {
 
 History:\n${history.join('\n')}`
 
-    const response = await getResponseFromAI(prompt)
+    const response = await aiRequest(prompt, {
+      maxOutputTokens: 50,
+      systemMessage:
+        'You are a helpful assistant that suggests possible terminal commands based on previous user input.',
+    })
     // expect the model to output a JSON array of strings
     let suggestions: string[] = []
     if (response) {
@@ -51,49 +55,4 @@ History:\n${history.join('\n')}`
     console.error('Suggestion API error', error)
     return NextResponse.json({ suggestions: [] }, { status: 500 })
   }
-}
-
-async function getResponseFromAI(prompt: string) {
-  if (process.env.NODE_ENV === 'development') {
-    return await localAiRequest(prompt)
-  }
-
-  return await openAiRequest(prompt)
-}
-
-async function openAiRequest(prompt: string) {
-  const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
-  const response = await openai.responses.create({
-    model: 'gpt-5-nano',
-    max_output_tokens: 50,
-    input: [
-      {
-        role: 'system',
-        content: `You are a helpful assistant that suggests possible terminal commands based on previous user input.`,
-      },
-      {
-        role: 'user',
-        content: prompt,
-      },
-    ],
-  })
-
-  return response.output_text?.trim()
-}
-
-async function localAiRequest(prompt: string) {
-  const res = await fetch('http://localhost:11434/api/generate', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      model: 'qwen2.5-coder:7b-instruct-q3_K_M',
-      prompt,
-      stream: false,
-      temperature: 0.5,
-    }),
-  })
-
-  if (!res.ok) return ''
-  const data = await res.json()
-  return data?.response || ''
 }
